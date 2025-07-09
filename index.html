@@ -3,38 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URBANSHADE // SECURE ACCESS TERMINAL</title>
+    <title>URBANSHADE // SECURE TERMINAL ACCESS</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
     <style>
-        /* style.css (встроенный) */
+        /* CSS Styles */
 
         :root {
             --bg-color: #0b0b0b;
-            --protocol-color: #7aff6c; /* Кислотно-зеленый */
-            --error-color: #ff3c3c;   /* Красный */
-            --progress-color: #00e0ff; /* Неоновый голубой */
-            --text-shadow-light: 0 0 5px rgba(122, 255, 108, 0.7);
+            --main-color: #7aff6c; /* Неоново-зелёный */
+            --error-color: #ff3c3c; /* Красный */
+            --text-shadow-main: 0 0 5px rgba(122, 255, 108, 0.7);
             --text-shadow-error: 0 0 8px rgba(255, 60, 60, 0.8);
         }
 
-        @keyframes blink-glitch {
-            0%, 100% { opacity: 1; text-shadow: var(--text-shadow-light); }
-            50% { opacity: 0.2; text-shadow: none; transform: translateX(2px); }
-            51% { opacity: 0.2; text-shadow: none; transform: translateX(-2px); }
-            52% { opacity: 1; text-shadow: var(--text-shadow-light); transform: translateX(0); }
-            70% { opacity: 1; }
-            71% { opacity: 0.8; transform: skewX(2deg); }
-            72% { opacity: 1; transform: skewX(0deg); }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
         }
 
-        @keyframes progress-fill {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        @keyframes progress-stripe {
-            0% { background-position: 0 0; }
-            100% { background-position: -70px 0; }
+        @keyframes glitch-text {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
 
         @keyframes pulse-error {
@@ -42,218 +35,113 @@
             50% { box-shadow: 0 0 25px var(--error-color), inset 0 0 12px var(--error-color); }
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
         body {
             background-color: var(--bg-color);
-            color: var(--protocol-color);
+            color: var(--main-color);
             font-family: 'Share Tech Mono', monospace;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             overflow: hidden;
-            text-shadow: var(--text-shadow-light);
+            text-shadow: var(--text-shadow-main);
+            perspective: 1000px;
         }
 
-        .container {
-            border: 2px solid var(--protocol-color);
-            box-shadow: 0 0 20px var(--protocol-color), inset 0 0 10px var(--protocol-color);
+        /* Общие стили для модальных окон */
+        .modal-container {
+            border: 2px solid var(--main-color);
+            box-shadow: 0 0 20px var(--main-color), inset 0 0 10px var(--main-color);
             padding: 40px 60px;
             text-align: center;
-            position: relative;
-            z-index: 1;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for content */
+            background-color: rgba(0, 0, 0, 0.7);
+            position: fixed; /* Используем fixed для центрирования */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Центрирование */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            z-index: 1000;
+            max-width: 90%; /* Ограничение ширины */
+            box-sizing: border-box; /* Для корректного padding */
         }
 
-        h1 {
+        .modal-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        h1, h2 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5em;
-            color: var(--protocol-color);
-            margin-bottom: 30px;
-            text-shadow: 0 0 15px var(--protocol-color);
+            font-size: 2.2em;
+            color: var(--main-color);
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px var(--main-color);
         }
 
-        .protocols-list {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 40px;
+        p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        p2 {
+            font-size: 1.1em;
+            color: red;
+            margin-bottom: 20px;
         }
 
-        .protocol-item {
-            font-size: 1.5em;
-            margin: 15px 0;
-            animation: blink-glitch 2s infinite step-end;
-        }
-        .protocol-item:nth-child(2) { animation-delay: 0.3s; }
-        .protocol-item:nth-child(3) { animation-delay: 0.6s; }
-
-
-        .access-button {
+        .button {
             background-color: transparent;
-            color: var(--protocol-color);
-            border: 2px solid var(--protocol-color);
+            color: var(--main-color);
+            border: 2px solid var(--main-color);
             padding: 15px 30px;
             font-family: 'Orbitron', sans-serif;
             font-size: 1.2em;
             cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 0 0 10px var(--protocol-color);
+            box-shadow: 0 0 10px var(--main-color);
             transition: all 0.3s ease;
-            text-shadow: var(--text-shadow-light);
+            text-shadow: var(--text-shadow-main);
             position: relative;
             overflow: hidden;
         }
 
-        .access-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(122,255,108,0.3), transparent);
-            transition: all 0.4s ease;
-        }
-
-        .access-button:hover::before {
-            left: 100%;
-        }
-
-        .access-button:hover {
-            background-color: var(--protocol-color);
+        .button:hover {
+            background-color: var(--main-color);
             color: var(--bg-color);
-            box-shadow: 0 0 25px var(--protocol-color);
+            box-shadow: 0 0 25px var(--main-color);
             text-shadow: none;
         }
 
-        /* Modal Overlay */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); /* Полупрозрачный черный */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background-color: var(--bg-color);
-            border: 2px solid var(--protocol-color);
-            box-shadow: 0 0 20px var(--protocol-color), inset 0 0 10px var(--protocol-color);
-            padding: 40px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-        }
-
-        .modal-content h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8em;
-            color: var(--protocol-color);
-            margin-bottom: 25px;
-            text-shadow: var(--text-shadow-light);
-        }
-
+        /* Input field */
         .password-input {
             width: calc(100% - 20px);
             padding: 12px;
             margin-bottom: 20px;
             background-color: var(--bg-color);
-            border: 1px solid var(--protocol-color);
-            color: var(--protocol-color);
+            border: 1px solid var(--main-color);
+            color: var(--main-color);
             font-family: 'Share Tech Mono', monospace;
             font-size: 1.2em;
             text-align: center;
-            box-shadow: inset 0 0 8px var(--protocol-color);
+            box-shadow: inset 0 0 8px var(--main-color);
             outline: none;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .password-input:focus {
-            border-color: var(--progress-color);
-            box-shadow: inset 0 0 12px var(--progress-color);
+            border-color: var(--main-color);
+            box-shadow: inset 0 0 12px var(--main-color);
         }
 
-        .enter-button {
-            background-color: transparent;
-            color: var(--protocol-color);
-            border: 2px solid var(--protocol-color);
-            padding: 10px 25px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1em;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 0 8px var(--protocol-color);
-            transition: all 0.3s ease;
-        }
-
-        .enter-button:hover {
-            background-color: var(--protocol-color);
-            color: var(--bg-color);
-            box-shadow: 0 0 15px var(--protocol-color);
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            height: 25px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--progress-color);
-            margin-top: 30px;
-            overflow: hidden;
-            position: relative;
-            display: none; /* Hidden by default */
-            box-shadow: 0 0 10px var(--progress-color), inset 0 0 5px var(--progress-color);
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--progress-color);
-            background-image: linear-gradient(
-                -45deg,
-                rgba(255, 255, 255, .2) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(255, 255, 255, .2) 50%,
-                rgba(255, 255, 255, .2) 75%,
-                transparent 75%,
-                transparent
-            );
-            background-size: 40px 40px;
-            animation: progress-stripe 2s linear infinite;
-            transition: width 2.5s linear; /* Smooth fill */
-            box-shadow: inset 0 0 5px rgba(0, 255, 255, 0.5);
-        }
-
-        .progress-text {
-            position: absolute;
-            width: 100%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--bg-color);
-            font-size: 0.9em;
-            font-weight: bold;
-            text-shadow: none;
-            z-index: 2;
-        }
-
-        /* Error Message */
+        /* Error message */
         .error-message {
             background-color: rgba(0, 0, 0, 0.9);
             border: 2px solid var(--error-color);
@@ -264,128 +152,332 @@
             font-size: 1.4em;
             text-transform: uppercase;
             text-shadow: var(--text-shadow-error);
-            display: none; /* Hidden by default */
-            animation: pulse-error 1s infinite alternate;
+            display: none;
             position: relative;
-            overflow: hidden;
+            animation: pulse-error 1s infinite alternate;
         }
 
         .error-message.active {
             display: block;
-            animation: pulse-error 1s infinite alternate;
         }
 
         .error-message p {
             margin: 5px 0;
         }
 
-        .error-message p:last-child {
+        .error-message p:first-child {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Object List Step Specific Styles */
+        #objectListStep {
+            display: none; /* Скрыто по умолчанию */
+            flex-direction: row; /* Для расположения списка и описания */
+            justify-content: center;
+            align-items: flex-start; /* Выравнивание по верху */
+            gap: 40px; /* Отступ между колонками */
+            max-width: 1200px; /* Шире для списка и описания */
+            padding: 30px; /* Меньше паддинг для общего контейнера */
+        }
+
+        #objectListStep.active {
+            display: flex;
+        }
+
+        .object-cards-column {
+            flex: 1; /* Занимает доступное пространство */
+            max-width: 350px; /* Максимальная ширина для списка */
+            border: 1px solid var(--main-color);
+            box-shadow: 0 0 15px var(--main-color);
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            text-align: left;
+            overflow-y: auto; /* Прокрутка для списка */
+            max-height: 70vh; /* Ограничение высоты */
+        }
+
+        .object-cards-column h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .object-card {
+            border: 1px solid var(--main-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 8px rgba(122, 255, 108, 0.4);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .object-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .object-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(122,255,108,0.1) 0%,
+                transparent 50%,
+                rgba(122,255,108,0.1) 100%
+            );
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .object-card:hover::before {
+            transform: translateX(0%);
+        }
+
+        .object-card:hover {
+            box-shadow: 0 0 15px var(--main-color);
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .object-card.selected {
+            background-color: rgba(122, 255, 108, 0.2);
+            border-color: white;
+            box-shadow: 0 0 25px var(--main-color), inset 0 0 10px white;
+        }
+
+        .object-card p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        .object-card span.status-tag {
             font-size: 0.8em;
-            font-style: italic;
-            margin-top: 15px;
+            background-color: rgba(122, 255, 108, 0.1);
+            padding: 3px 8px;
+            border: 1px solid rgba(122, 255, 108, 0.5);
+            margin-left: 10px;
+        }
+
+        .object-card span.status-critical {
+            color: var(--error-color);
+            border-color: var(--error-color);
+            background-color: rgba(255, 60, 60, 0.1);
+            animation: blink 1s infinite step-end;
+        }
+
+        .object-details-column {
+            flex: 2; /* Занимает больше места */
+            border: 1px solid var(--main-color);
+            box-shadow: 0 0 15px var(--main-color);
+            padding: 30px;
+            background-color: rgba(0, 0, 0, 0.6);
+            text-align: left;
+            min-height: 70vh; /* Сохраняет высоту как у списка */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .object-details-column h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            color: var(--main-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--main-color);
+        }
+
+        .object-details-column p {
+            margin-bottom: 15px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .object-details-column .description {
+            flex-grow: 1; /* Занимает всё доступное пространство */
+        }
+
+        .object-details-column .details-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .object-details-column .details-actions .button {
+            padding: 10px 25px;
+            font-size: 1em;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>URBANSHADE SECURE TERMINAL</h1>
-        <ul class="protocols-list">
-            <li class="protocol-item">[PROTOCOL: EXPENDABLE]</li>
-            <li class="protocol-item">[PROTOCOL: NULL-ECHO]</li>
-            <li class="protocol-item">[PROTOCOL: OBSIDIAN LOCK]</li>
-        </ul>
-        <button id="accessTerminalBtn" class="access-button">ACCESS TERMINAL</button>
+    <audio id="backgroundAudio" src="assets/audio/background.mp3" loop hidden></audio>
+
+    <div id="soundActivationStep" class="modal-container active">
+        <h1>Требуется аудиосопровождение.</h1>
+        <p>Включить эмбиент?</p>
+        <button id="activateSoundBtn" class="button">[ВКЛЮЧИТЬ ЗВУК]</button>
     </div>
 
-    <div id="passwordModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>ACCESS AUTHORIZATION REQUIRED</h2>
-            <input type="password" id="passwordInput" class="password-input" placeholder="ENTER CREDENTIALS">
-            <button id="enterBtn" class="enter-button">ENTER</button>
+    <div id="authStep" class="modal-container">
+        <h2>ACCESS TERMINAL / URBANSHADE CORE</h2>
+        <input type="password" id="passwordInput" class="password-input" placeholder="ENTER CREDENTIALS">
+        <button id="enterAuthBtn" class="button">ENTER</button>
+        <div id="authErrorMessage" class="error-message">
+            <p>❌ ACCESS DENIED</p>
+            <p>Incorrect credentials. Protocol breach flagged.</p>
+        </div>
+    </div>
 
-            <div id="progressBarContainer" class="progress-container">
-                <div id="progressBar" class="progress-bar"></div>
-                <span id="progressText" class="progress-text"></span>
+    <div id="objectListStep" class="modal-container">
+        <div class="object-cards-column">
+            <h2>URBANSHADE // OBJECTS</h2>
+            <div class="object-card" data-id="001" data-target="objects/1/object001.html">
+                <p>Object #001 <span class="status-tag status-critical">[UNKNOWN]</span></p>
+                <p2>Pandemonium</p2>
+            </div>
+            <div class="object-card" data-id="014" data-target="objects/2/object002.html">
+                <p>Object #014 <span class="status-tag status-critical">[BREACHED]</span></p>
+                <p>Trawlguard Specimen</p>
+            </div>
+            <div class="object-card" data-id="045" data-target="objects/object045.html">
+                <p>Object #045 <span class="status-tag">[CONTAINED]</span></p>
+                <p>Unknown Flesh Node</p>
+            </div>
             </div>
 
-            <div id="errorMessage" class="error-message">
-                <p>❌ ACCESS DENIED</p>
-                <p>Incorrect credentials. Protocol breach flagged.</p>
+        <div class="object-details-column">
+            <h3 id="objectDetailsTitle">SELECT OBJECT FOR DETAILS</h3>
+            <div class="description">
+                <p id="objectDetailsDescription">Click on an object card on the left to view its classified details here.</p>
+            </div>
+            <div class="details-actions">
+                <button id="goToObjectBtn" class="button" style="display:none;">[Перейти]</button>
             </div>
         </div>
     </div>
 
     <script>
-        // script.js (встроенный)
+        // JavaScript Logic
         document.addEventListener('DOMContentLoaded', () => {
-            const accessTerminalBtn = document.getElementById('accessTerminalBtn');
-            const passwordModal = document.getElementById('passwordModal');
+            const backgroundAudio = document.getElementById('backgroundAudio');
+            const activateSoundBtn = document.getElementById('activateSoundBtn');
+
+            const soundActivationStep = document.getElementById('soundActivationStep');
+            const authStep = document.getElementById('authStep');
+            const objectListStep = document.getElementById('objectListStep');
+
             const passwordInput = document.getElementById('passwordInput');
-            const enterBtn = document.getElementById('enterBtn');
-            const progressBarContainer = document.getElementById('progressBarContainer');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const errorMessage = document.getElementById('errorMessage');
+            const enterAuthBtn = document.getElementById('enterAuthBtn');
+            const authErrorMessage = document.getElementById('authErrorMessage');
+
+            const objectCardsColumn = document.querySelector('.object-cards-column');
+            const objectDetailsTitle = document.getElementById('objectDetailsTitle');
+            const objectDetailsDescription = document.getElementById('objectDetailsDescription');
+            const goToObjectBtn = document.getElementById('goToObjectBtn');
 
             const CORRECT_PASSWORD = '9548';
-            const REDIRECT_URL = 'index2.html';
+            const ERROR_SOUND_PATH = 'assets/audio/error.mp3';
 
-            // Открыть модальное окно
-            accessTerminalBtn.addEventListener('click', () => {
-                passwordModal.classList.add('active');
-                passwordInput.value = ''; // Очистить поле ввода
-                errorMessage.classList.remove('active'); // Скрыть сообщение об ошибке
-                progressBarContainer.style.display = 'none'; // Скрыть прогресс-бар
-                progressBar.style.width = '0%'; // Сбросить прогресс-бар
-                passwordInput.focus(); // Установить фокус на поле ввода
-            });
-
-            // Закрыть модальное окно при клике вне содержимого
-            passwordModal.addEventListener('click', (e) => {
-                if (e.target === passwordModal) {
-                    passwordModal.classList.remove('active');
-                }
-            });
-
-            // Обработка ввода пароля
-            const handlePasswordAttempt = () => {
-                const enteredPassword = passwordInput.value;
-
-                if (enteredPassword === CORRECT_PASSWORD) {
-                    errorMessage.classList.remove('active');
-                    progressBarContainer.style.display = 'block'; // Показать прогресс-бар
-                    progressBar.style.width = '100%'; // Запустить анимацию заполнения
-
-                    let currentProgress = 0;
-                    const progressInterval = setInterval(() => {
-                        currentProgress += 4; // Увеличиваем на 4% каждые 100мс
-                        if (currentProgress > 100) currentProgress = 100;
-                        progressText.textContent = `LOADING DATA... ${currentProgress}%`;
-
-                        if (currentProgress >= 100) {
-                            clearInterval(progressInterval);
-                            setTimeout(() => {
-                                window.location.href = REDIRECT_URL; // Редирект после завершения
-                            }, 500); // Небольшая задержка после 100%
-                        }
-                    }, 100); // Обновляем каждые 100 мс
-
-                } else {
-                    errorMessage.classList.add('active');
-                    progressBarContainer.style.display = 'none';
-                    progressBar.style.width = '0%';
-                    passwordInput.value = ''; // Очистить поле ввода при ошибке
+            // Объект с данными об объектах (для описаний)
+            const objectData = {
+                '001': {
+                    title: 'Object #001 — Pandemonium',
+                    description: 'Субъект представляет собой биологическую разумную единицу, проявившую аномальные когнитивные функции и непредсказуемое агрессивное поведение после инцидента 17.03.████ в секторе Urbanshade Hadal Complex. Предполагается, что его текущая форма является результатом [DATA DELETED] и интеграции биометрических протоколов. Любые попытки установления связи или прямого взаимодействия приводят к мгновенной агрессии и последующей смерти объекта.'
+                },
+                '014': {
+                    title: 'Object #014 — Trawlguard Specimen',
+                    description: 'Биологический субъект, обнаруженный в глубоководных желобах. Проявляет свойства регенерации и адаптивной мимикрии. Статус: Сдерживался в секторе катакомб. Требует постоянного мониторинга и подавления психотропной активности.'
+                },
+                '045': {
+                    title: 'Object #045 — Unknown Flesh Node',
+                    description: 'Неизвестная биологическая сущность, обнаруженная на глубине 16 тысяч километров в толще воды. Быстро растет и поглощает органические и неорганические материалы. Статус: Неизвестно/Активно расширяется. Всему персоналу запрещено приближаться.'
                 }
             };
 
-            enterBtn.addEventListener('click', handlePasswordAttempt);
+            // --- Step Management Function ---
+            function showStep(stepElement) {
+                // Hide all steps
+                document.querySelectorAll('.modal-container').forEach(step => {
+                    step.classList.remove('active');
+                });
+                // Show the desired step
+                stepElement.classList.add('active');
+            }
 
-            // Обработка нажатия Enter
+            // --- Step 1: Sound Activation ---
+            activateSoundBtn.addEventListener('click', () => {
+                backgroundAudio.volume = 0.5; // Set volume
+                backgroundAudio.play()
+                    .then(() => {
+                        console.log("Background audio activated.");
+                        showStep(authStep); // Move to auth step
+                        passwordInput.focus(); // Focus on password input
+                    })
+                    .catch(e => {
+                        console.error("Failed to play background audio:", e);
+                        // Fallback if autoplay is blocked
+                        alert("Не удалось включить звук. Браузер может блокировать автовоспроизведение без взаимодействия. Продолжаем без звука.");
+                        showStep(authStep); // Still move to auth step
+                        passwordInput.focus();
+                    });
+            });
+
+            // --- Step 2: Authorization ---
+            const handleAuthAttempt = () => {
+                const enteredPassword = passwordInput.value.toLowerCase(); // Пароль без учета регистра
+                if (enteredPassword === CORRECT_PASSWORD) {
+                    authErrorMessage.classList.remove('active');
+                    passwordInput.value = ''; // Clear input
+                    showStep(objectListStep); // Move to object list step
+                } else {
+                    new Audio(ERROR_SOUND_PATH).play().catch(e => console.log("Error audio play failed:", e));
+                    authErrorMessage.classList.add('active');
+                    passwordInput.value = ''; // Clear input
+                    passwordInput.focus(); // Re-focus
+                }
+            };
+
+            enterAuthBtn.addEventListener('click', handleAuthAttempt);
             passwordInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    handlePasswordAttempt();
+                    handleAuthAttempt();
                 }
             });
+
+            // --- Step 3: Object List and Details ---
+            objectCardsColumn.addEventListener('click', (e) => {
+                const selectedCard = e.target.closest('.object-card');
+                if (selectedCard) {
+                    // Remove 'selected' from all cards
+                    document.querySelectorAll('.object-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    // Add 'selected' to the clicked card
+                    selectedCard.classList.add('selected');
+
+                    const objectId = selectedCard.dataset.id;
+                    const objectTarget = selectedCard.dataset.target;
+
+                    if (objectData[objectId]) {
+                        objectDetailsTitle.textContent = objectData[objectId].title;
+                        objectDetailsDescription.textContent = objectData[objectId].description;
+                        goToObjectBtn.style.display = 'block'; // Show the button
+                        goToObjectBtn.onclick = () => {
+                            window.location.href = objectTarget; // Set redirect target
+                        };
+                    } else {
+                        objectDetailsTitle.textContent = 'UNKNOWN OBJECT';
+                        objectDetailsDescription.textContent = 'No detailed information available for this object.';
+                        goToObjectBtn.style.display = 'none'; // Hide button if no target
+                    }
+                }
+            });
+
+            // Initial state: Show sound activation step
+            showStep(soundActivationStep);
         });
     </script>
 </body>
