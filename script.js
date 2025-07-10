@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progressBar'); // Добавлен элемент прогресс-бара
     const detailsDescription = document.getElementById('detailsDescription');
 
-    const CORRECT_PASSWORD = 'pandemonium';
+    const CORRECT_PASSWORD = '95489548';
     const ERROR_SOUND_PATH = 'assets/audio/error.mp3';
 
     // Расширенные данные об объектах (Ваши данные)
