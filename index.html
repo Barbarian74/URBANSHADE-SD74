@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEUROSHADE // SECURE ACCESS TERMINAL</title>
+    <title>WINDOWS XP - DESKTOP</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=IBM+Plex+Mono&family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=IBM+Plex+Mono&family=Courier+Prime&family=Tahoma&display=swap" rel="stylesheet">
 </head>
 <body>
     <audio id="backgroundAudio" src="assets/audio/background.mp3" loop hidden></audio>
+    <audio id="errorSound" src="assets/audio/error.mp3" hidden></audio>
 
     <div id="soundActivationStep" class="modal-container active">
         <h1>[ СИСТЕМНАЯ ИНИЦИАЛИЗАЦИЯ ]</h1>
@@ -24,61 +25,276 @@
             <p>ДОСТУП ЗАПРЕЩЕН</p>
             <p>Неверные учетные данные. Обнаружена попытка взлома.</p>
         </div>
+        <div id="progressBarContainer" class="progress-bar-container">
+            <div id="progressBar" class="progress-bar"></div>
+            <span id="progressStatus" class="progress-status"></span>
+        </div>
     </div>
 
-    <div id="objectListStep" class="main-interface-container">
-        <div class="left-panel">
-            <h3>[ БАЗА ДАННЫХ ОБЪЕКТОВ ]</h3>
-            <div class="object-list" id="objectList">
-                <div class="object-item" data-id="001">
-                    <span class="object-id">#001</span> Предвестник Смерти <span class="status-tag status-unknown">[НЕИЗВЕСТНО]</span>
+    <div id="desktop" class="desktop-screen">
+        <div class="desktop-wallpaper"></div>
+        <div id="desktop-icons" class="desktop-icons-container">
+            <div class="desktop-icon" id="urbanshade-icon">
+                <img src="assets/icon/exe.ico" alt="URBANSHADE Icon">
+                <span>URBANSHADE.EXE</span>
+            </div>
+            <div class="desktop-icon" id="my-documents-icon">
+                <img src="assets/icon/mydoc.ico" alt="My Documents Icon">
+                <span>Мои Документы</span>
+            </div>
+            <div class="desktop-icon" id="control-panel-icon">
+                <img src="assets/icon/cpd.ico" alt="Control Panel Icon">
+                <span>Панель Управления</span>
+            </div>
+            <div class="desktop-icon" id="console-icon">
+                <img src="assets/icon/cp.ico" alt="Console Icon">
+                <span>Консоль</span>
+            </div>
+        </div>
+
+        <div id="mainOsWindow" class="os-window">
+            <div class="os-window-titlebar">
+                <span class="os-window-title">C:\APPLICATIONS\NEUROSHADE.EXE</span>
+                <div class="os-window-buttons">
+                    <button class="os-window-button minimize">–</button>
+                    <button class="os-window-button maximize">☐</button>
+                    <button class="os-window-button close">X</button>
                 </div>
-                <div class="object-item" data-id="014">
-                    <span class="object-id">#014</span> Закованный Цепями <span class="status-tag">[СОДЕРЖИТСЯ]</span>
-                </div>
-                <div class="object-item" data-id="045">
-                    <span class="object-id">#045</span> Система Безопасности и Навигации [СБН] <span class="status-tag status-critical">[НАРУШЕНО]</span>
-                </div>
-                <div class="object-item" data-id="072">
-                    <span class="object-id">#072</span> Хорошие Люди <span class="status-tag">[СОДЕРЖИТСЯ]</span>
-                </div>
-                <div class="object-item" data-id="099">
-                    <span class="object-id">#099</span> Пустотные Сгустки <span class="status-tag">[ИССЛЕДУЕТСЯ]</span>
-                </div>
-                <div class="object-item" data-id="177">
-                    <span class="object-id">#177</span> Розовый Удильщик <span class="status-tag">[СОДЕРЖИТСЯ]</span>
-                </div>
-                <div class="object-item" data-id="265">
-                    <span class="object-id">#265</span> Обиталище Демонов <span class="status-tag status-critical">[НАРУШЕНО]</span>
+            </div>
+            <div class="os-window-content">
+                <nav class="category-menu">
+                    <button class="category-button active" data-category="objects">ОБЪЕКТЫ</button>
+                    <button class="category-button" data-category="complex">КОМПЛЕКСЫ</button>
+                    <button class="category-button" data-category="operations">ОПЕРАЦИИ</button>
+                </nav>
+                <div id="contentArea" class="content-area">
+                    <div id="objectsContent" class="category-content active">
+                        <div class="left-panel">
+                            <h3>[ БАЗА ДАННЫХ ОБЪЕКТОВ ]</h3>
+                            <div class="object-list" id="objectList">
+                                <div class="object-item" data-id="001">
+                                    <span class="object-id">#001</span> Предвестник Смерти <span class="status-tag status-unknown">[НЕИЗВЕСТНО]</span>
+                                </div>
+                                <div class="object-item" data-id="014">
+                                    <span class="object-id">#014</span> Закованный Цепями <span class="status-tag">[СОДЕРЖИТСЯ]</span>
+                                </div>
+                                <div class="object-item" data-id="045">
+                                    <span class="object-id">#045</span> Система Безопасности и Навигации [СБН] <span class="status-tag status-critical">[НАРУШЕНО]</span>
+                                </div>
+                                <div class="object-item" data-id="072">
+                                    <span class="object-id">#072</span> Хорошие Люди <span class="status-tag">[СОДЕРЖИТСЯ]</span>
+                                </div>
+                                <div class="object-item" data-id="099">
+                                    <span class="object-id">#099</span> Пустотные Сгустки <span class="status-tag">[ИССЛЕДУЕТСЯ]</span>
+                                </div>
+                                <div class="object-item" data-id="117">
+                                    <span class="object-id">#177</span> Розовый Удильщик <span class="status-tag">[СОДЕРЖИТСЯ]</span>
+                                </div>
+                                <div class="object-item" data-id="265">
+                                    <span class="object-id">#265</span> Обиталище Демонов <span class="status-tag status-critical">[НАРУШЕНО]</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="right-panel">
+                            <h3 id="detailsTitle">[ ДАННЫЕ ОБЪЕКТА ]</h3>
+                            <div class="data-field">
+                                <span class="label">ID ОБЪЕКТА:</span> <span id="detailsId">---</span>
+                            </div>
+                            <div class="data-field">
+                                <span class="label">ТИП:</span> <span id="detailsType">---</span>
+                            </div>
+                            <div class="data-field">
+                                <span class="label">СТАТУС:</span> <span id="detailsStatus">---</span>
+                            </div>
+                            <div class="data-field">
+                                <span class="label">ПОСЛЕДНИЙ КОНТАКТ:</span> <span id="detailsLastContact">---</span>
+                            </div>
+                            <div class="description-block">
+                                <span class="label">ОПИСАНИЕ:</span>
+                                <p id="detailsDescription" class="info-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="complexContent" class="category-content">
+                        <h3>[ ИНФОРМАЦИЯ О КОМПЛЕКСАХ ]</h3>
+                        <div class="complex-list">
+                            <div class="complex-card" data-complex="glubinnii">
+                                <div class="card-header">
+                                    <span class="card-icon">🏢</span>
+                                    <span class="card-title">Глубинный Комплекс</span>
+                                    <span class="card-status status-active">[ACTIVE]</span>
+                                </div>
+                                <div class="card-details">
+                                    <p>Расположение: Марианская впадина</p>
+                                    <p>Глубина: 11,000 м</p>
+                                    <p>Уровень допуска: 5+</p>
+                                    <div class="expanded-info">
+                                        <h4>Детали:</h4>
+                                        <p>Основная исследовательская база, специализирующаяся на изучении аномалий глубоководных зон. Включает несколько независимых секторов.</p>
+                                        <p>Системы жизнеобеспечения: Автономные.</p>
+                                        <p>Защитные протоколы: Активированы.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="complex-card" data-complex="marianskii">
+                                <div class="card-header">
+                                    <span class="card-icon">🧊</span>
+                                    <span class="card-title">Марианский Сектор</span>
+                                    <span class="card-status status-sealed">[SEALED]</span>
+                                </div>
+                                <div class="card-details">
+                                    <p>Расположение: В составе Глубинного Комплекса</p>
+                                    <p>Глубина: 10,500 м</p>
+                                    <p>Уровень допуска: 7 (ограничен)</p>
+                                    <div class="expanded-info">
+                                        <h4>Детали:</h4>
+                                        <p>Автономный исследовательский блок, предназначенный для особо опасных объектов. В настоящее время загерметизирован после инцидента с Объектом #045.</p>
+                                        <p>Последняя активность: Неизвестна.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="complex-card" data-complex="hadal">
+                                <div class="card-header">
+                                    <span class="card-icon">🗄️</span>
+                                    <span class="card-title">Hadal Complex</span>
+                                    <span class="card-status status-decommissioned">[DECOMMISSIONED]</span>
+                                </div>
+                                <div class="card-details">
+                                    <p>Расположение: Устаревшее название</p>
+                                    <p>Глубина: N/A</p>
+                                    <p>Уровень допуска: N/A</p>
+                                    <div class="expanded-info">
+                                        <h4>Детали:</h4>
+                                        <p>Устаревшее наименование для основного исследовательского комплекса. Используется в старых документах и архивах.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="operationsContent" class="category-content">
+                        <h3>[ ЖУРНАЛ ОПЕРАЦИЙ ]</h3>
+                        <div class="operations-list">
+                            <div class="operation-card" data-operation="null-echo">
+                                <div class="op-header">
+                                    <span class="op-icon">✔</span>
+                                    <span class="op-title">Операция "NullEcho"</span>
+                                    <span class="op-status status-completed">ЗАВЕРШЕНО</span>
+                                </div>
+                                <div class="op-details">
+                                    <p>Руководитель: Ком. Рейнс</p>
+                                    <p>Цель: Ликвидация всплеска активности Объекта #001</p>
+                                    <p>Начало: 2024-05-01</p>
+                                    <p>Окончание: 2024-05-05</p>
+                                    <div class="op-log">
+                                        <h4>Лог:</h4>
+                                        <p>[05.01.2024] Инициация протокола "Нулевое Эхо".</p>
+                                        <p>[05.02.2024] Активированы сдерживающие поля.</p>
+                                        <p>[05.03.2024] Объект #001 проявляет сопротивление.</p>
+                                        <p>[05.04.2024] Частичная стабилизация. Потери: 3 сотрудника.</p>
+                                        <p>[05.05.2024] Статус: ЗАВЕРШЕНО. Объект локализован.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="operation-card" data-operation="dark-omen">
+                                <div class="op-header">
+                                    <span class="op-icon">🔥</span>
+                                    <span class="op-title">Операция "Темное Знамение"</span>
+                                    <span class="op-status status-in-progress">В ПРОЦЕССЕ</span>
+                                </div>
+                                <div class="op-details">
+                                    <p>Руководитель: Др. Эшер</p>
+                                    <p>Цель: Изучение феномена самовозгорания в Секторе B</p>
+                                    <p>Начало: 2024-06-10</p>
+                                    <div class="op-log">
+                                        <h4>Лог:</h4>
+                                        <p>[06.10.2024] Начало исследования. Зафиксированы первые аномалии.</p>
+                                        <p>[06.12.2024] Уровень температуры в Секторе B повышен.</p>
+                                        <p>[06.14.2024] Принято решение об эвакуации второстепенного персонала.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="operation-card" data-operation="broken-wings">
+                                <div class="op-header">
+                                    <span class="op-icon">✖</span>
+                                    <span class="op-title">Операция "Сломанные Крылья"</span>
+                                    <span class="op-status status-annulled">АННУЛИРОВАНО</span>
+                                </div>
+                                <div class="op-details">
+                                    <p>Руководитель: Др. Кай</p>
+                                    <p>Цель: Создание био-дронов для разведки</p>
+                                    <p>Начало: 2023-11-01</p>
+                                    <p>Окончание: 2023-12-20</p>
+                                    <div class="op-log">
+                                        <h4>Лог:</h4>
+                                        <p>[11.01.2023] Прототип био-дрона V1.0 готов к испытаниям.</p>
+                                        <p>[11.15.2023] Дрон V1.0 потерян в зоне аномалии.</p>
+                                        <p>[12.01.2023] Разработка V2.0 приостановлена из-за нехватки ресурсов.</p>
+                                        <p>[12.20.2023] Операция аннулирована. Проект признан нецелесообразным.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="right-panel">
-            <h3 id="detailsTitle">[ ДАННЫЕ ОБЪЕКТА ]</h3>
-            <div class="data-field">
-                <span class="label">ID ОБЪЕКТА:</span> <span id="detailsId">---</span>
-            </div>
-            <div class="data-field">
-                <span class="label">ТИП:</span> <span id="detailsType">---</span>
-            </div>
-            <div class="data-field">
-                <span class="label">СТАТУС:</span> <span id="detailsStatus">---</span>
-            </div>
-            <div class="data-field">
-                <span class="label">ПОСЛЕДНИЙ КОНТАКТ:</span> <span id="detailsLastContact">---</span>
-            </div>
-            <div class="description-block">
-                <span class="label">ЗАГРУЗКА ОПИСАНИЯ:</span>
-                <div class="progress-bar-container">
-                    <div id="progressBar" class="progress-bar"></div>
+        <div id="consoleContainer" class="os-window console-window">
+            <div class="os-window-titlebar">
+                <span class="os-window-title">C:\WINDOWS\SYSTEM32\CMD.EXE</span>
+                <div class="os-window-buttons">
+                    <button class="os-window-button minimize">–</button>
+                    <button class="os-window-button maximize">☐</button>
+                    <button class="os-window-button close">X</button>
                 </div>
-                <p id="detailsDescription" class="description-text"></p>
+            </div>
+            <div class="console-content">
+                <div id="consoleOutput" class="console-output">
+                    <p>URBANSHADE TECH CORP. [Version 5.1.2600]</p>
+                    <p>(C) Copyright 1990-2025 URBANSHADE TECH CORP.</p>
+                    <br>
+                </div>
+                <div class="console-input-line">
+                    <span>C:\&gt;</span><input type="text" id="consoleInput" class="console-input" autofocus>
+                </div>
             </div>
         </div>
+
+        <div id="taskbar" class="taskbar">
+            <button id="start-button" class="start-button">
+                <span>Start</span>
+            </button>
+            <div id="taskbar-apps" class="taskbar-apps">
+                </div>
+            <div id="system-tray" class="system-tray">
+                <span id="clock" class="clock"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="accessDeniedModal" class="modal-container access-denied-modal">
+        <h2>[ ДОСТУП ЗАПРЕЩЕН ]</h2>
+        <p>Вы не обладаете достаточными правами для запуска этой программы.</p>
+        <button class="button close-modal-button">[ ЗАКРЫТЬ ]</button>
     </div>
 
     <div id="screenGlitchOverlay"></div>
+
+    <div id="bsodScreen" class="bsod-screen">
+        <pre>
+*** SYSTEM FAILURE ***
+
+CRITICAL ERROR: PANDEMONIUM breached core memory
+
+A fatal exception has occurred at 0x00000000:0x00000000.
+The system has been halted.
+
+Please restart your system. If this error persists, contact technical support.
+
+_
+        </pre>
+    </div>
 
     <script src="script.js"></script>
 </body>

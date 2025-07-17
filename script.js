@@ -4,12 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const soundActivationStep = document.getElementById('soundActivationStep');
     const authStep = document.getElementById('authStep');
-    const objectListStep = document.getElementById('objectListStep');
+    const desktop = document.getElementById('desktop'); // Main desktop container
 
     const passwordInput = document.getElementById('passwordInput');
     const enterAuthBtn = document.getElementById('enterAuthBtn');
     const authErrorMessage = document.getElementById('authErrorMessage');
     const screenGlitchOverlay = document.getElementById('screenGlitchOverlay');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressStatus = document.getElementById('progressStatus');
 
     const objectListContainer = document.getElementById('objectList');
     const detailsTitle = document.getElementById('detailsTitle');
@@ -17,13 +20,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailsType = document.getElementById('detailsType');
     const detailsStatus = document.getElementById('detailsStatus');
     const detailsLastContact = document.getElementById('detailsLastContact');
-    const progressBar = document.getElementById('progressBar'); // Добавлен элемент прогресс-бара
     const detailsDescription = document.getElementById('detailsDescription');
 
-    const CORRECT_PASSWORD = '95489548';
-    const ERROR_SOUND_PATH = 'assets/audio/error.mp3';
+    const mainOsWindow = document.getElementById('mainOsWindow');
+    const consoleWindow = document.getElementById('consoleContainer');
+    const consoleIcon = document.getElementById('console-icon');
+    const consoleOutput = document.getElementById('consoleOutput');
+    const consoleInput = document.getElementById('consoleInput');
+    const bsodScreen = document.getElementById('bsodScreen');
+    const errorSound = document.getElementById('errorSound'); // Added error sound element
 
-    // Расширенные данные об объектах (Ваши данные)
+    const taskbarApps = document.getElementById('taskbar-apps');
+    const clockElement = document.getElementById('clock');
+
+    const CORRECT_PASSWORD = '95489548';
+    const ERROR_SOUND_PATH = 'assets/audio/error.mp3'; // Defined, but using the element now
+
+    // --- Object Data (from user provided script.js) ---
     const objectData = {
         '001': {
             id: '#001',
@@ -83,86 +96,475 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // let typewriterTimeout; // Для хранения таймаута для эффекта самопечати - УДАЛЕНО
+    let zIndexCounter = 200; // Counter for managing z-index of windows
 
-    // --- Функция управления отображением экранов ---
-    function showStep(stepElement) {
-        // Находим текущий активный шаг
-        const currentActiveStep = document.querySelector('.modal-container.active, .main-interface-container.active');
+    const errorMessages = [
+        "Ошибка 0x0000007F: Сбой ядра",
+        "Нарушение доступа к памяти",
+        "Соединение с комплексом потеряно",
+        "CRITICAL_PROCESS_DIED",
+        "UNEXPECTED_KERNEL_MODE_TRAP",
+        "PAGE_FAULT_IN_NONPAGED_AREA",
+        "Загрузка системных драйверов нарушена",
+        "Обнаружена критическая уязвимость",
+        "Потеря контроля над системой",
+        "Внедрение вредоносного кода"
+    ];
 
-        if (currentActiveStep) {
-            // Запускаем анимацию исчезновения для текущего шага
-            currentActiveStep.classList.add('inactive');
-            currentActiveStep.addEventListener('animationend', () => {
-                currentActiveStep.classList.remove('active', 'inactive'); // Убираем классы после анимации
-                stepElement.classList.add('active'); // Активируем новый шаг
-            }, { once: true }); // Слушатель сработает только один раз
-        } else {
-            // Если активных шагов нет, просто показываем новый
-            stepElement.classList.add('active');
+    let glitchInterval;
+    let errorPopupInterval;
+
+
+    // --- Helper to update z-index on window click ---
+    function bringToFront(windowElement) {
+        zIndexCounter++;
+        windowElement.style.zIndex = zIndexCounter;
+    }
+
+    // --- Function to add window to taskbar ---
+    function addTaskbarButton(windowElement) {
+        const title = windowElement.querySelector('.os-window-title').textContent;
+        const button = document.createElement('button');
+        button.classList.add('taskbar-app-button');
+        button.textContent = title.split('\\').pop().replace('.EXE', ''); // Display only the app name
+        button.dataset.windowId = windowElement.id; // Store window ID for easy lookup
+        taskbarApps.appendChild(button);
+
+        // Make the button active when the window is active
+        if (windowElement.classList.contains('active') && !windowElement.classList.contains('hidden')) {
+            button.classList.add('active');
+        }
+
+        button.addEventListener('click', () => {
+            if (windowElement.classList.contains('active') && !windowElement.classList.contains('hidden')) {
+                // If active, minimize it
+                windowElement.classList.add('hidden');
+                button.classList.remove('active');
+            } else {
+                // If minimized or inactive, activate it
+                document.querySelectorAll('.taskbar-app-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.os-window').forEach(win => {
+                    win.classList.remove('active');
+                    win.classList.add('hidden'); // Ensure others are hidden
+                });
+
+                windowElement.classList.remove('hidden');
+                windowElement.classList.add('active');
+                bringToFront(windowElement);
+                button.classList.add('active');
+            }
+        });
+    }
+
+    // --- Function to remove window from taskbar ---
+    function removeTaskbarButton(windowId) {
+        const buttonToRemove = document.querySelector(`.taskbar-app-button[data-window-id="${windowId}"]`);
+        if (buttonToRemove) {
+            buttonToRemove.remove();
         }
     }
 
-    // --- Функция загрузки описания с прогресс-баром ---
-    function loadDescriptionWithProgress(text, element, barElement) {
-        element.classList.remove('loaded'); // Скрываем текст
-        element.textContent = ''; // Очищаем текст
-        barElement.style.width = '0%'; // Сбрасываем прогресс-бар
 
-        // Небольшая задержка перед началом анимации, чтобы сброс был заметен
-        setTimeout(() => {
-            barElement.style.transition = 'width 1.5s ease-out'; // Анимация заполнения 1.5 секунды
-            barElement.style.width = '100%'; // Запускаем заполнение
+    // --- Make windows draggable and resizable ---
+    function makeWindowInteractive(windowElement) {
+        const titleBar = windowElement.querySelector('.os-window-titlebar');
+        const minimizeBtn = windowElement.querySelector('.os-window-button.minimize');
+        const maximizeBtn = windowElement.querySelector('.os-window-button.maximize');
+        const closeBtn = windowElement.querySelector('.os-window-button.close');
 
-            setTimeout(() => {
-                element.textContent = text; // Показываем полный текст
-                element.classList.add('loaded'); // Делаем текст видимым
-                barElement.style.transition = 'none'; // Отключаем transition для быстрого сброса
-                barElement.style.width = '0%'; // Сбрасываем прогресс-бар для следующего использования
-            }, 1500); // Должно соответствовать длительности transition progress-bar
-        }, 100);
+        let isDragging = false;
+        let offset = { x: 0, y: 0 };
+        let originalWidth, originalHeight, originalX, originalY; // For maximize/restore
+
+        // Dragging
+        titleBar.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.os-window-button')) return; // Don't drag if clicking buttons
+
+            isDragging = true;
+            windowElement.style.cursor = 'grabbing';
+            offset.x = e.clientX - windowElement.getBoundingClientRect().left;
+            offset.y = e.clientY - windowElement.getBoundingClientRect().top;
+
+            bringToFront(windowElement); // Bring to front on drag start
+            windowElement.classList.remove('maximized'); // Exit maximized state on drag
+            const taskbarBtn = document.querySelector(`.taskbar-app-button[data-window-id="${windowElement.id}"]`);
+            if (taskbarBtn) taskbarBtn.classList.add('active'); // Keep taskbar button active
+        });
+
+        desktop.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            let newX = e.clientX - offset.x;
+            let newY = e.clientY - offset.y;
+
+            // Boundary checks
+            newX = Math.max(0, Math.min(newX, window.innerWidth - windowElement.offsetWidth));
+            newY = Math.max(0, Math.min(newY, window.innerHeight - windowElement.offsetHeight - 40)); // Account for taskbar
+
+            windowElement.style.left = `${newX}px`;
+            windowElement.style.top = `${newY}px`;
+        });
+
+        desktop.addEventListener('mouseup', () => {
+            isDragging = false;
+            windowElement.style.cursor = 'default';
+        });
+
+        // Resizing (done via CSS `resize: both` and `min-width/height`)
+        // To handle z-index on resize, we can just call bringToFront on mousedown on the window itself
+        windowElement.addEventListener('mousedown', (e) => {
+            // Only bring to front if not clicking a button or titlebar for dragging
+            if (!e.target.closest('.os-window-button') && !e.target.closest('.os-window-titlebar')) {
+                bringToFront(windowElement);
+            }
+            const taskbarBtn = document.querySelector(`.taskbar-app-button[data-window-id="${windowElement.id}"]`);
+            if (taskbarBtn) {
+                document.querySelectorAll('.taskbar-app-button').forEach(btn => btn.classList.remove('active'));
+                taskbarBtn.classList.add('active');
+            }
+        });
+
+
+        // Minimize
+        minimizeBtn.addEventListener('click', () => {
+            windowElement.classList.add('hidden');
+            const taskbarBtn = document.querySelector(`.taskbar-app-button[data-window-id="${windowElement.id}"]`);
+            if (taskbarBtn) taskbarBtn.classList.remove('active');
+        });
+
+        // Maximize/Restore
+        maximizeBtn.addEventListener('click', () => {
+            if (windowElement.classList.contains('maximized')) {
+                // Restore
+                windowElement.classList.remove('maximized');
+                windowElement.style.width = originalWidth;
+                windowElement.style.height = originalHeight;
+                windowElement.style.left = originalX;
+                windowElement.style.top = originalY;
+            } else {
+                // Maximize
+                originalWidth = windowElement.style.width;
+                originalHeight = windowElement.style.height;
+                originalX = windowElement.style.left;
+                originalY = windowElement.style.top;
+
+                windowElement.classList.add('maximized');
+                bringToFront(windowElement);
+            }
+        });
+
+        // Close
+        closeBtn.addEventListener('click', () => {
+            windowElement.classList.remove('active');
+            windowElement.classList.add('hidden'); // Ensure it's fully hidden
+            removeTaskbarButton(windowElement.id);
+        });
+    }
+
+    // --- Function to manage window visibility (show/hide) ---
+    function toggleWindow(windowElement) {
+        if (windowElement.classList.contains('active') && !windowElement.classList.contains('hidden')) {
+            // Already active, minimize it
+            windowElement.classList.add('hidden');
+        } else {
+            // If hidden or inactive, activate it
+            // Hide all other active windows first
+            document.querySelectorAll('.os-window.active:not(.hidden)').forEach(win => {
+                win.classList.remove('active');
+                win.classList.add('hidden');
+                const taskbarBtn = document.querySelector(`.taskbar-app-button[data-window-id="${win.id}"]`);
+                if (taskbarBtn) taskbarBtn.classList.remove('active');
+            });
+            windowElement.classList.remove('hidden');
+            windowElement.classList.add('active');
+            bringToFront(windowElement);
+
+            // Update taskbar button active state
+            document.querySelectorAll('.taskbar-app-button').forEach(btn => btn.classList.remove('active'));
+            const taskbarBtn = document.querySelector(`.taskbar-app-button[data-window-id="${windowElement.id}"]`);
+            if (taskbarBtn) taskbarBtn.classList.add('active');
+            
+            // For console, focus input
+            if (windowElement.id === 'consoleContainer') {
+                consoleInput.focus();
+                consoleOutput.scrollTop = consoleOutput.scrollHeight; // Scroll to bottom
+            }
+        }
     }
 
 
-    // --- 1. Модальное окно - запрос аудио ---
+    // --- Clock function for Taskbar ---
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        clockElement.textContent = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000); // Update every second
+
+
+    // --- Progress Bar Animation ---
+    function animateProgressBar(duration, callback) {
+        progressBarContainer.classList.add('active');
+        progressBar.style.width = '0%';
+        progressStatus.textContent = 'ИНИЦИАЛИЗАЦИЯ...';
+
+        let startTime = null;
+        const messages = [
+            "ЗАГРУЗКА ЯДРА СИСТЕМЫ [███         ] 10%",
+            "ПРОВЕРКА ЦЕЛОСТНОСТИ ФАЙЛОВ [██████      ] 50%",
+            "ЗАПУСК МОДУЛЯ УПРАВЛЕНИЯ [█████████   ] 80%",
+            "СТАРТОВЫЕ ПРОТОКОЛЫ [██████████  ] 90%",
+            "ГОТОВНОСТЬ СИСТЕМЫ [████████████] 100%"
+        ];
+        let messageIndex = 0;
+
+        function step(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const progress = (currentTime - startTime) / duration;
+            const width = Math.min(progress * 100, 100);
+            progressBar.style.width = `${width}%`;
+
+            if (width >= (messageIndex + 1) * (100 / messages.length) && messageIndex < messages.length) {
+                progressStatus.textContent = messages[messageIndex];
+                messageIndex++;
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                progressBar.style.width = '100%';
+                progressStatus.textContent = messages[messages.length - 1]; // Ensure last message is shown
+                setTimeout(callback, 500); // Small delay after completion
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
+
+    // --- Hacking Animation ---
+    function createErrorPopup(isBlue = false) {
+        const popup = document.createElement('div');
+        popup.classList.add('error-popup');
+        if (isBlue) {
+            popup.classList.add('blue');
+        }
+
+        popup.style.width = `${Math.random() * 200 + 150}px`; // 150-350px
+        popup.style.height = `${Math.random() * 100 + 80}px`; // 80-180px
+        popup.style.left = `${Math.random() * (window.innerWidth - parseInt(popup.style.width))}px`;
+        popup.style.top = `${Math.random() * (window.innerHeight - parseInt(popup.style.height))}px`;
+        
+        popup.innerHTML = `
+            <span>${errorMessages[Math.floor(Math.random() * errorMessages.length)]}</span>
+            <br>
+            <span>Нажмите ОК для продолжения</span>
+            <button class="error-ok-button">ОК</button>
+        `;
+        document.body.appendChild(popup);
+
+        // Play error sound
+        errorSound.currentTime = 0; // Reset to start
+        errorSound.volume = 0.3; // Lower volume for rapid firing
+        errorSound.play().catch(e => console.error("Error playing error sound:", e));
+
+        // Close button functionality (optional, as they will be cleared later)
+        popup.querySelector('.error-ok-button').addEventListener('click', () => {
+            popup.remove();
+        });
+    }
+
+    function startHackingAnimation() {
+        let popupCount = 0;
+        const maxPopups = 50; // Limit the total number of popups for performance
+        let isBlue = false;
+
+        errorPopupInterval = setInterval(() => {
+            if (popupCount < maxPopups) {
+                createErrorPopup(isBlue);
+                popupCount++;
+                isBlue = !isBlue; // Alternate between red and blue
+            } else {
+                // If max popups reached, still create new ones but also remove old ones
+                if (document.querySelectorAll('.error-popup').length > 10) { // Keep a certain number on screen
+                    document.querySelector('.error-popup').remove();
+                }
+                createErrorPopup(isBlue);
+                isBlue = !isBlue;
+            }
+            // Trigger a screen glitch every few popups
+            if (popupCount % 3 === 0) {
+                screenGlitchOverlay.classList.add('active');
+                setTimeout(() => {
+                    screenGlitchOverlay.classList.remove('active');
+                }, 100);
+            }
+        }, 150); // Create a new popup every 150ms
+
+        setTimeout(() => {
+            clearInterval(errorPopupInterval);
+            // Clear all error popups
+            document.querySelectorAll('.error-popup').forEach(popup => popup.remove());
+            screenGlitchOverlay.classList.remove('active'); // Ensure glitch is off
+            
+            // Show BSOD
+            desktop.style.display = 'none'; // Hide desktop
+            bsodScreen.classList.add('active');
+            backgroundAudio.pause(); // Stop background music
+
+            setTimeout(() => {
+                window.location.href = 'https://www.youtube.com/watch?v=xvFZjo5PgG0&list=RDxvFZjo5PgG0&index=1'; // Redirect after 2 seconds
+            }, 2000);
+
+        }, 6000); // Hacking animation lasts for 6 seconds (5-7s range)
+    }
+
+
+    // --- Console Logic ---
+    function appendToConsole(text, color = 'green') {
+        const p = document.createElement('p');
+        p.textContent = text;
+        p.style.color = color;
+        consoleOutput.appendChild(p);
+        consoleOutput.scrollTop = consoleOutput.scrollHeight; // Auto-scroll to bottom
+    }
+
+    function handleConsoleCommand() {
+        const command = consoleInput.value.trim();
+        appendToConsole(`C:\\> ${command}`);
+        consoleInput.value = ''; // Clear input
+
+        if (command === 'protocol delta') {
+            appendToConsole("Executing 'unlock-protocol delta'...", "cyan");
+            appendToConsole("Initiating system override protocols...", "yellow");
+            setTimeout(startHackingAnimation, 1000); // Start hacking animation after a short delay
+        } else if (command === 'help') {
+            appendToConsole("Доступные команды:");
+            appendToConsole("  help - Показать список команд");
+            appendToConsole("  clear - Очистить консоль");
+            appendToConsole("  exit - Закрыть консоль");
+            appendToConsole("  protocol delta - ...", "red");
+        } else if (command === 'clear') {
+            consoleOutput.innerHTML = ''; // Clear content
+            appendToConsole("URBANSHADE TECH CORP. [Version 5.1.2600]");
+            appendToConsole("(C) Copyright 1990-2025 URBANSHADE TECH CORP.");
+            appendToConsole("");
+        } else if (command === 'exit') {
+            toggleWindow(consoleWindow);
+        }
+        else {
+            appendToConsole(`'${command}' не является внутренней или внешней командой, исполняемой программой или пакетным файлом.`, "red");
+        }
+        consoleInput.focus();
+    }
+
+    consoleInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleConsoleCommand();
+        }
+    });
+
+
+    // --- Function to handle category changes ---
+    const categoryButtons = document.querySelectorAll('.category-button');
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove 'active' class from all buttons and content
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.category-content').forEach(content => content.classList.remove('active'));
+
+            // Add 'active' class to the clicked button and its corresponding content
+            button.classList.add('active');
+            const targetCategory = button.dataset.category;
+            document.getElementById(`${targetCategory}Content`).classList.add('active');
+        });
+    });
+
+    // --- Complex and Operations card expansion ---
+    document.querySelectorAll('.complex-card, .operation-card').forEach(card => {
+        card.addEventListener('click', () => {
+            card.classList.toggle('expanded');
+        });
+    });
+
+
+    // --- Function management for active/inactive steps ---
+    function showStep(stepElement) {
+        const currentActiveStep = document.querySelector('.modal-container.active, .desktop-screen.active');
+        if (currentActiveStep) {
+            currentActiveStep.classList.add('inactive');
+            currentActiveStep.addEventListener('animationend', () => {
+                currentActiveStep.classList.remove('active', 'inactive');
+                stepElement.classList.add('active');
+                if (stepElement === desktop) {
+                    // Initialize interactive windows and taskbar buttons when desktop becomes active
+                    makeWindowInteractive(mainOsWindow);
+                    makeWindowInteractive(consoleWindow);
+                    addTaskbarButton(mainOsWindow);
+                    addTaskbarButton(consoleWindow); // Add console to taskbar
+                    updateClock(); // Initial clock update
+                }
+            }, { once: true });
+        } else {
+            stepElement.classList.add('active');
+            if (stepElement === desktop) {
+                // Initialize interactive windows and taskbar buttons when desktop becomes active
+                makeWindowInteractive(mainOsWindow);
+                makeWindowInteractive(consoleWindow);
+                addTaskbarButton(mainOsWindow);
+                addTaskbarButton(consoleWindow);
+                updateClock();
+            }
+        }
+    }
+
+
+    // --- 1. Sound Activation Step ---
     activateSoundBtn.addEventListener('click', () => {
-        backgroundAudio.volume = 0.5; // Установка громкости
+        backgroundAudio.volume = 0.5;
         backgroundAudio.play()
             .then(() => {
                 console.log("Фоновое аудио активировано.");
-                showStep(authStep); // Переход к окну авторизации
-                passwordInput.focus(); // Устанавливаем фокус на поле ввода
+                showStep(authStep);
+                passwordInput.focus();
             })
             .catch(e => {
                 console.error("Не удалось воспроизвести фоновое аудио:", e);
                 alert("Не удалось включить звук. Возможно, браузер блокирует автовоспроизведение без взаимодействия. Продолжаем без звука.");
-                showStep(authStep); // Продолжаем к авторизации даже без звука
+                showStep(authStep);
                 passwordInput.focus();
             });
     });
 
-    // --- 2. Окно авторизации ---
+    // --- 2. Authorization Window ---
     const handleAuthAttempt = () => {
-        const enteredPassword = passwordInput.value.toLowerCase(); // Пароль без учета регистра
+        const enteredPassword = passwordInput.value.toLowerCase();
         if (enteredPassword === CORRECT_PASSWORD) {
-            authErrorMessage.classList.remove('active'); // Скрываем сообщение об ошибке
-            passwordInput.value = ''; // Очищаем поле ввода
-            showStep(objectListStep); // Переход к главному интерфейсу
+            authErrorMessage.classList.remove('active');
+            passwordInput.value = '';
+            
+            // Start progress bar animation
+            animateProgressBar(3000, () => { // 3 seconds for progress bar
+                progressBarContainer.classList.remove('active'); // Hide progress bar
+                showStep(desktop); // Transition to desktop
+                // Activate the first object item by default
+                setTimeout(() => {
+                    const firstItem = document.querySelector('.object-item');
+                    if (firstItem) {
+                        firstItem.click();
+                    }
+                }, 600); // Small delay to allow desktop to appear
+            });
 
-            // Активируем первый элемент списка объектов по умолчанию
-            setTimeout(() => {
-                 const firstItem = document.querySelector('.object-item');
-                 if (firstItem) {
-                     firstItem.click(); // Программно кликаем по первому элементу
-                 }
-            }, 600); // Небольшая задержка для завершения анимации перехода
         } else {
-            new Audio(ERROR_SOUND_PATH).play().catch(e => console.log("Не удалось воспроизвести звук ошибки:", e));
-            authErrorMessage.classList.add('active'); // Показываем сообщение об ошибке
-            passwordInput.value = ''; // Очищаем поле ввода
-            passwordInput.focus(); // Возвращаем фокус
+            errorSound.currentTime = 0;
+            errorSound.volume = 0.7; // Louder for auth error
+            errorSound.play().catch(e => console.log("Не удалось воспроизвести звук ошибки:", e));
+            authErrorMessage.classList.add('active');
+            passwordInput.value = '';
+            passwordInput.focus();
 
-            // Эффект короткого глитча на весь экран
             screenGlitchOverlay.classList.add('active');
             screenGlitchOverlay.addEventListener('animationend', () => {
                 screenGlitchOverlay.classList.remove('active');
@@ -177,42 +579,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 3. Интерфейс объектов ---
+    // --- 3. Object Interface ---
     objectListContainer.addEventListener('click', (e) => {
         const selectedItem = e.target.closest('.object-item');
         if (selectedItem) {
-            // Удаляем класс 'selected' у всех элементов
             document.querySelectorAll('.object-item').forEach(item => {
                 item.classList.remove('selected');
             });
-            // Добавляем класс 'selected' к выбранному элементу
             selectedItem.classList.add('selected');
 
-            const objectId = selectedItem.dataset.id; // Получаем ID объекта из data-атрибута
-            const data = objectData[objectId]; // Получаем данные по ID
+            const objectId = selectedItem.dataset.id;
+            const data = objectData[objectId];
 
             if (data) {
-                // Заполняем поля информации
                 detailsTitle.textContent = `[ ОБЪЕКТ ${data.id} : ${data.name.toUpperCase()} ]`;
                 detailsId.textContent = data.id;
                 detailsType.textContent = data.type;
                 detailsStatus.textContent = data.status;
                 detailsLastContact.textContent = data.lastContact;
-
-                // Запускаем загрузку описания с прогресс-баром вместо самопечати
-                loadDescriptionWithProgress(data.description, detailsDescription, progressBar);
+                // Changed from typeWriter to direct textContent assignment
+                detailsDescription.textContent = data.description; 
             } else {
-                // Если данные не найдены
                 detailsTitle.textContent = '[ ДАННЫЕ ОБЪЕКТА НЕДОСТУПНЫ ]';
                 detailsId.textContent = '---';
                 detailsType.textContent = '---';
                 detailsStatus.textContent = '---';
                 detailsLastContact.textContent = '---';
-                loadDescriptionWithProgress('Секретная информация об этом объекте отсутствует в базе данных. Проверьте запрос.', detailsDescription, progressBar);
+                // Changed from typeWriter to direct textContent assignment
+                detailsDescription.textContent = 'Секретная информация об этом объекте отсутствует в базе данных. Проверьте запрос.';
             }
         }
     });
 
-    // Инициализация: показываем первое окно при загрузке страницы
+    // --- Desktop Icon Click Handlers ---
+    document.getElementById('urbanshade-icon').addEventListener('dblclick', () => {
+        toggleWindow(mainOsWindow);
+    });
+    document.getElementById('my-documents-icon').addEventListener('dblclick', () => {
+        document.getElementById('accessDeniedModal').classList.add('active');
+    });
+    document.getElementById('control-panel-icon').addEventListener('dblclick', () => {
+        document.getElementById('accessDeniedModal').classList.add('active');
+    });
+    document.getElementById('console-icon').addEventListener('dblclick', () => {
+        toggleWindow(consoleWindow);
+    });
+
+    // --- Close modal button for access denied ---
+    document.querySelectorAll('.close-modal-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.target.closest('.modal-container').classList.remove('active');
+        });
+    });
+
+
+    // Initial setup: show the first step
     showStep(soundActivationStep);
 });

@@ -1,64 +1,105 @@
 /* Переменные для цветов и шрифтов */
 :root {
-    --bg-color: #060d1b; /* Тёмно-синий фон */
-    --main-text-color: #3df2ff; /* Неоновый голубой */
-    --accent-color: #8a2be2; /* Фиолетовый/сине-бирюзовый для акцентов */
-    --error-color: #ff3c3c; /* Красный для ошибок */
-    --border-color: #1a4f7a; /* Цвет рамки и разделителей */
+    /* Цвета для Windows XP/98/2000, адаптированные под техно-атмосферу */
+    --bg-color: #0d1a2f; /* Темно-синий/почти черный фон */
+    --main-bg-color-win: rgba(30, 45, 60, 0.9); /* Полупрозрачный темно-синий для основного окна */
+    --window-border-dark: #808080; /* Темно-серый для тени border */
+    --window-border-light: #FFFFFF; /* Белый для света border */
+    --titlebar-bg: #2a4b7a; /* Синий заголовок */
+    --titlebar-text: #FFFFFF; /* Белый текст заголовка */
+    --button-bg-light: #445c78; /* Светло-серый для кнопок */
+    --button-bg-dark: #3a5068; /* Темно-серый для кнопок */
+    --button-border-dark: #1f2a3a; /* Темный для границ кнопок */
+    --button-border-light: #6a8ba6; /* Светлый для границ кнопок */
+    --active-menu-bg: #1a3a5a; /* Активное меню - темнее синий */
+    --active-menu-text: #3df2ff; /* Активное меню - неоновый голубой */
+    --panel-bg: rgba(20, 35, 50, 0.8); /* Полупрозрачный темно-синий для внутренних панелей */
 
-    /* Тени для текста для эффекта свечения */
+    /* Старые шрифты, адаптированные под техногенный стиль */
+    --font-old-gui: 'Tahoma', 'MS Sans Serif', 'Arial', sans-serif;
+    --font-fixed-width: 'Lucida Console', 'Courier New', 'Share Tech Mono', monospace;
+    --font-header: 'Share Tech Mono', 'IBM Plex Mono', monospace; /* Для заголовков */
+
+    /* Цвета для "техногенных" элементов и акцентов */
+    --tech-main-text-color: #3df2ff; /* Неоновый голубой */
+    --tech-accent-color: #8a2be2; /* Фиолетовый/сине-бирюзовый для акцентов */
+    --tech-error-color: #ff3c3c; /* Красный для ошибок */
+    --tech-border-color: #1a4f7a; /* Цвет рамки и разделителей */
+
+    /* Тени для текста для эффекта свечения (для техногенных элементов) */
     --text-shadow-main: 0 0 5px rgba(61, 242, 255, 0.7);
     --text-shadow-accent: 0 0 8px rgba(138, 43, 226, 0.7);
     --text-shadow-error: 0 0 10px rgba(255, 60, 60, 0.8);
+
+    /* Цвета для рабочего стола и панели задач */
+    --desktop-bg-color: #004080; /* Темно-синий фон рабочего стола */
+    --taskbar-bg-color: #C0C0C0; /* Серый фон панели задач (XP default) */
+    --taskbar-border-light: #F0F0F0;
+    --taskbar-border-dark: #808080;
+    --start-button-bg: linear-gradient(to bottom, #76B900, #3C7000); /* XP Start button green */
+    --start-button-text: #FFFFFF;
+
+    /* Цвета для прогресс-бара */
+    --progress-bar-bg: #2a4b7a;
+    --progress-bar-fill: linear-gradient(to right, #3df2ff, #8a2be2); /* Неоновый градиент */
+    --progress-bar-border: #1a4f7a;
+    --progress-text-color: #FFFFFF;
+
+    /* Цвета для консоли */
+    --console-bg: #000000;
+    --console-text: #00ff00;
+    --console-input-bg: #000000;
+    --console-input-text: #00ff00;
+    --console-border: #008000;
 }
 
 /* Общие стили для body */
 body {
     background-color: var(--bg-color);
-    color: var(--main-text-color);
-    font-family: 'Share Tech Mono', 'IBM Plex Mono', 'Courier New', monospace; /* Моноширинные шрифты */
+    color: var(--tech-main-text-color); /* Основной цвет текста - техно-голубой */
+    font-family: var(--font-fixed-width);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    overflow: hidden; /* Скрыть полосы прокрутки */
-    text-shadow: var(--text-shadow-main);
-    user-select: none; /* Запретить выделение текста */
+    overflow: hidden;
+    user-select: none;
+    text-shadow: var(--text-shadow-main); /* Неоновый эффект для основного текста */
 }
 
 /* Анимации */
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
+    from { opacity: 0; transform: scale(0.98); }
     to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes fadeOut {
     from { opacity: 1; transform: scale(1); }
-    to { opacity: 0; transform: scale(0.95); }
+    to { opacity: 0; transform: scale(0.98); }
 }
 
-@keyframes glitch {
-    0% { transform: translate(0); text-shadow: var(--text-shadow-main); }
-    20% { transform: translate(-1px, 1px); text-shadow: 0 0 5px var(--accent-color); }
-    40% { transform: translate(1px, -1px); text-shadow: 0 0 5px var(--error-color); }
-    60% { transform: translate(-1px, -1px); text-shadow: var(--text-shadow-main); }
+@keyframes glitch { /* Сохранен для использования в ошибке авторизации */
+    0% { transform: translate(0); }
+    20% { transform: translate(-1px, 1px); }
+    40% { transform: translate(1px, -1px); }
+    60% { transform: translate(-1px, -1px); }
     80% { transform: translate(1px, 1px); }
     100% { transform: translate(0); }
 }
 
-@keyframes blink {
+@keyframes blink { /* Сохранен для использования в ошибке авторизации и статус-тегах */
     0%, 100% { opacity: 1; }
     50% { opacity: 0.2; }
 }
 
-@keyframes errorShake {
+@keyframes errorShake { /* Сохранен для использования в ошибке авторизации */
     0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
     20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-@keyframes screenFlash {
+@keyframes screenFlash { /* Сохранен для использования в ошибке авторизации */
     0% { background-color: rgba(255, 0, 0, 0); }
     50% { background-color: rgba(255, 0, 0, 0.2); }
     100% { background-color: rgba(255, 0, 0, 0); }
@@ -66,115 +107,122 @@ body {
 
 /* Стили для модальных окон (звук и авторизация) */
 .modal-container {
-    background-color: rgba(0, 0, 0, 0.9);
-    border: 2px solid var(--border-color);
-    box-shadow: 0 0 25px var(--border-color), inset 0 0 10px var(--border-color);
-    padding: 50px 70px;
+    background-color: var(--main-bg-color-win);
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    padding: 30px 50px;
     text-align: center;
-    position: fixed; /* Фиксированное позиционирование */
-    top: 30%; /* Изменено на 50% для центрирования */
-    left: 35%; /* Изменено на 50% для центрирования */
-    transform: translate(-50%, -50%); /* Точное центрирование */
+    position: fixed;
+    top: 35%; /* Изменено по запросу */
+    left: 33%; /* Изменено по запросу */
+    transform: translate(-50%, -50%);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
-    z-index: 1000; /* Поверх всего */
-    max-width: 500px;
-    width: 90%; /* Адаптивная ширина */
-    box-sizing: border-box; /* Учитывать padding в ширине */
-    pointer-events: none; /* Позволяет кликам проходить сквозь, когда неактивно */
+    z-index: 1000;
+    max-width: 600px;
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: none;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
 }
 
 .modal-container.active {
     opacity: 1;
     visibility: visible;
-    pointer-events: all; /* Включает клики, когда активно */
-    animation: fadeIn 0.5s ease-out forwards; /* Анимация появления */
+    pointer-events: all;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
 .modal-container.inactive {
-    animation: fadeOut 0.4s ease-out forwards; /* Анимация исчезновения */
+    animation: fadeOut 0.4s ease-out forwards;
 }
 
 /* Заголовки в модальных окнах */
 h1, h2, h3 {
-    font-size: 2.2em;
-    margin-bottom: 25px;
-    color: var(--main-text-color);
+    font-family: var(--font-header);
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: var(--tech-main-text-color);
     text-shadow: var(--text-shadow-main);
 }
 
 /* Общий текст в модальных окнах */
 p {
-    font-size: 1.1em;
-    line-height: 1.5;
-    margin-bottom: 20px;
+    font-size: 1em;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    text-shadow: none; /* Для обычного текста в модале - без свечения */
+    color: #a0a0a0; /* Более приглушенный цвет */
 }
 
 /* Стили для кнопок */
 .button {
-    background-color: transparent;
-    color: var(--main-text-color);
-    border: 2px solid var(--border-color);
-    padding: 15px 30px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1.2em;
+    background-color: var(--button-bg-light);
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    padding: 10px 20px;
+    font-family: var(--font-fixed-width);
+    font-size: 1em;
     cursor: pointer;
     text-transform: uppercase;
-    box-shadow: 0 0 10px var(--border-color);
-    transition: all 0.3s ease;
+    box-shadow: none;
+    transition: background-color 0.1s linear, border-color 0.1s linear, color 0.1s linear, text-shadow 0.1s linear;
+    color: var(--tech-main-text-color);
     text-shadow: var(--text-shadow-main);
-    position: relative;
-    overflow: hidden;
 }
 
 .button:hover {
-    background-color: var(--main-text-color);
-    color: var(--bg-color);
-    box-shadow: 0 0 25px var(--main-text-color);
-    text-shadow: none;
-    transform: translateY(-2px); /* Небольшой эффект поднятия */
+    background-color: var(--button-bg-dark);
+    color: var(--active-menu-text);
+    text-shadow: var(--text-shadow-main);
 }
 
 .button:active {
+    background-color: var(--button-bg-dark);
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
     transform: translateY(0);
-    box-shadow: 0 0 10px var(--main-text-color);
+    box-shadow: none;
 }
 
 /* Поле ввода пароля */
 .input-field {
-    width: calc(100% - 40px); /* Учитываем padding */
-    padding: 15px;
-    margin-bottom: 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 1px solid var(--border-color);
-    color: var(--main-text-color);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1.2em;
-    text-align: center;
-    box-shadow: inset 0 0 8px var(--border-color);
+    width: calc(100% - 22px);
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: rgba(0, 0, 0, 0.4); /* Полупрозрачный черный */
+    border: 1px solid;
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+    color: var(--tech-main-text-color);
+    font-family: var(--font-fixed-width);
+    font-size: 1em;
+    text-align: left;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4);
     outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.1s, box-shadow 0.1s;
+    text-shadow: var(--text-shadow-main);
 }
 
 .input-field:focus {
-    border-color: var(--main-text-color);
-    box-shadow: inset 0 0 12px var(--main-text-color);
+    border-color: var(--tech-accent-color);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 0 0 0 1px var(--tech-accent-color);
 }
 
 /* Сообщение об ошибке */
 .error-message {
-    background-color: rgba(0, 0, 0, 0.9);
-    border: 2px solid var(--error-color);
-    box-shadow: 0 0 15px var(--error-color), inset 0 0 8px var(--error-color);
-    padding: 20px;
-    margin-top: 20px;
-    color: var(--error-color);
-    font-size: 1.3em;
+    background-color: rgba(255, 60, 60, 0.1);
+    border: 1px solid var(--tech-error-color);
+    box-shadow: 0 0 5px var(--tech-error-color);
+    padding: 15px;
+    margin-top: 15px;
+    color: var(--tech-error-color);
+    font-size: 1em;
     text-transform: uppercase;
     text-shadow: var(--text-shadow-error);
-    display: none; /* Скрыто по умолчанию */
-    animation: blink 1s infinite alternate; /* Мигание */
+    display: none;
+    animation: blink 1s infinite alternate;
 }
 
 .error-message.active {
@@ -182,7 +230,29 @@ p {
 }
 
 .error-message p:first-child {
-    animation: errorShake 0.5s ease-in-out; /* Эффект тряски */
+    animation: errorShake 0.5s ease-in-out;
+}
+
+/* Диалог "Доступ запрещен" */
+.access-denied-modal {
+    z-index: 1002; /* Выше основного окна */
+}
+.access-denied-modal h2 {
+    color: var(--tech-error-color);
+    text-shadow: var(--text-shadow-error);
+}
+.access-denied-modal p {
+    color: #f0f0f0;
+}
+.access-denied-modal .button {
+    background-color: var(--tech-error-color);
+    border-color: rgba(255, 60, 60, 0.7);
+    color: #FFFFFF;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+.access-denied-modal .button:hover {
+    background-color: #cc0000;
+    border-color: #ff3c3c;
 }
 
 /* Глитч-оверлей на весь экран */
@@ -192,200 +262,897 @@ p {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: transparent; /* Изначально прозрачный */
+    background-color: transparent;
     z-index: 1001;
-    pointer-events: none; /* Позволяет кликам проходить сквозь */
-    opacity: 0; /* Скрыто по умолчанию */
+    pointer-events: none;
+    opacity: 0;
 }
 
 #screenGlitchOverlay.active {
-    animation: screenFlash 0.3s ease-out forwards; /* Короткая анимация вспышки */
+    animation: screenFlash 0.3s ease-out forwards;
 }
 
-/* --- 3. Главный интерфейс объектов --- */
-.main-interface-container {
+/* --- Рабочий стол (Desktop) --- */
+.desktop-screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--desktop-bg-color); /* Основной фон рабочего стола */
+    display: none; /* Скрыт по умолчанию */
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start; /* Иконки будут выравниваться слева-сверху */
+    overflow: hidden;
+}
+
+.desktop-screen.active {
     display: flex;
-    width: 90vw; /* Ширина по вьюпорту */
-    max-width: 1400px;
-    height: 80vh; /* Высота по вьюпорту */
+}
+
+.desktop-wallpaper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('assets/icon/wp.jpg'); /* Пример обоев */
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.7) contrast(1.2); /* Немного затемняем и делаем контрастнее */
+    z-index: 0;
+}
+
+.desktop-icons-container {
+    position: relative; /* Чтобы иконки были поверх обоев */
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+}
+
+.desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    font-family: var(--font-old-gui);
+    font-size: 0.85em;
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid transparent; /* Для эффекта выделения */
+    transition: background-color 0.1s, border-color 0.1s;
+    user-select: none;
+}
+
+.desktop-icon:hover {
+    background-color: rgba(0,0,128, 0.3); /* Синий фон при наведении */
+    border-color: rgba(255,255,255,0.5);
+}
+
+.desktop-icon:active {
+    background-color: rgba(0,0,128, 0.5);
+    border-color: rgba(255,255,255,0.8);
+}
+
+.desktop-icon img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+    image-rendering: pixelated; /* Для пиксельных иконок */
+}
+
+/* --- Главное окно ОС (приложение на рабочем столе) --- */
+.os-window {
+    display: flex;
+    flex-direction: column;
+    position: absolute; /* Позиционирование на рабочем столе */
+    top: 50px; /* Начальная позиция */
+    left: 50px;
+    width: 90vw;
+    max-width: 1200px;
+    height: 85vh;
     max-height: 800px;
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 2px solid var(--border-color);
-    box-shadow: 0 0 30px var(--border-color), inset 0 0 15px var(--border-color);
+    background-color: var(--main-bg-color-win);
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    box-shadow: 3px 3px 15px rgba(0,0,0,0.7);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out, transform 0.3s ease-out, top 0.3s, left 0.3s, width 0.3s, height 0.3s;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
+    z-index: 100; /* Чтобы было поверх рабочего стола */
+    resize: both; /* Возможность изменения размера */
+    overflow: hidden; /* Скрыть содержимое при ресайзе */
+    min-width: 400px;
+    min-height: 300px;
 }
 
-.main-interface-container.active {
+.os-window.active {
     opacity: 1;
     visibility: visible;
     animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Левая и правая панели */
-.left-panel, .right-panel {
-    border: 1px solid var(--border-color); /* Отдельные рамки для панелей */
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 20px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+.os-window.hidden {
+    display: none; /* Скрываем окно при минимизации */
+}
+
+.os-window.maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 40px) !important; /* Учитываем панель задач */
+    max-width: none !important;
+    max-height: none !important;
+    transform: none !important;
+    border: none;
+    box-shadow: none;
+}
+
+.os-window-titlebar {
+    background: linear-gradient(to right, #1a3a5a, #3a6ea5); /* Gradient blue for XP titlebar */
+    color: var(--titlebar-text);
+    padding: 3px 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--button-border-dark);
+    cursor: default;
+    height: 25px;
+    box-sizing: border-box;
+    font-family: var(--font-old-gui);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}
+
+.os-window-title {
+    margin-left: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.os-window-buttons {
+    display: flex;
+}
+
+.os-window-button {
+    background-color: var(--button-bg-light);
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    margin-left: 2px;
+    cursor: pointer;
+    color: var(--tech-main-text-color);
+    font-family: var(--font-old-gui);
+    text-shadow: var(--text-shadow-main);
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -1px -1px 2px rgba(0,0,0,0.5);
+    line-height: 1; /* For better vertical alignment of text */
+}
+
+.os-window-button.close {
+    background-color: #ff0000; /* Red for close button */
+    color: white;
+    border-color: #ff5555 #880000 #880000 #ff5555;
+    text-shadow: 0 0 3px rgba(255,255,255,0.5);
+}
+.os-window-button.close:hover {
+    background-color: #cc0000;
+}
+
+
+.os-window-button:hover {
+    background-color: var(--button-bg-dark);
+}
+
+.os-window-button:active {
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+    background-color: var(--button-bg-dark);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.os-window-content {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* Меню категорий */
+.category-menu {
+    display: flex;
+    border-bottom: 1px solid var(--button-border-dark);
+    background-color: var(--panel-bg); /* Темнее, чем main-bg-color-win */
+    padding: 2px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.category-button {
+    background-color: var(--button-bg-light);
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    padding: 5px 15px;
+    font-family: var(--font-fixed-width);
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-right: 2px;
+    white-space: nowrap;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -1px -1px 2px rgba(0,0,0,0.5);
+    transition: all 0.1s ease;
+}
+
+.category-button:hover {
+    background-color: var(--button-bg-dark);
+    color: var(--active-menu-text);
+    text-shadow: var(--text-shadow-main);
+}
+
+.category-button.active {
+    background-color: var(--active-menu-bg);
+    color: var(--active-menu-text);
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark); /* Обратный border для эффекта "нажатой" кнопки */
+    position: relative;
+    z-index: 1;
+    transform: translateY(1px);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Область содержимого категорий */
+.content-area {
+    flex-grow: 1;
+    display: flex;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.category-content {
+    display: none;
+    flex-grow: 1;
+    background-color: var(--panel-bg);
+    border: 1px solid;
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+    padding: 10px;
+    overflow: hidden;
+    flex-direction: row; /* По умолчанию flex-direction row */
+}
+
+.category-content.active {
+    display: flex;
+}
+
+/* Заголовки внутренних блоков */
+.category-content h3 {
+    font-family: var(--font-header);
+    color: var(--tech-accent-color);
+    text-shadow: var(--text-shadow-accent);
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--tech-border-color);
+    font-size: 1.4em;
+}
+
+/* Левая и правая панели (внутри объектов) */
+.left-panel, .right-panel {
+    border: 1px solid;
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+    background-color: rgba(20, 35, 50, 0.6); /* Более прозрачный для внутренней панели */
+    padding: 10px;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9em;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
 }
 
 .left-panel {
-    flex: 1; /* Занимает 1/3 пространства */
-    max-width: 350px;
-    overflow-y: auto; /* Прокрутка для списка */
-    border-right: none; /* Граница обрабатывается общим контейнером */
+    flex: 1;
+    max-width: 300px; /* Увеличена ширина */
+    overflow-y: auto;
+    margin-right: 10px;
 }
 
 .right-panel {
-    flex: 2; /* Занимает 2/3 пространства */
-    border-left: none; /* Граница обрабатывается общим контейнером */
+    flex: 2;
+    overflow-y: auto;
 }
 
 /* Заголовки панелей */
 .left-panel h3, .right-panel h3 {
     margin-top: 0;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 1.5em;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--tech-border-color);
+    font-size: 1.2em;
+    color: var(--tech-accent-color);
     text-shadow: var(--text-shadow-accent);
 }
 
 /* Элементы списка объектов */
 .object-list {
-    flex-grow: 1; /* Позволяет списку занимать все доступное место */
+    flex-grow: 1;
 }
 
 .object-item {
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    border: 1px solid transparent; /* Изначально прозрачная рамка */
+    padding: 5px 8px;
+    margin-bottom: 3px;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     position: relative;
     overflow: hidden;
-    color: var(--main-text-color);
+    color: var(--tech-main-text-color);
+    background-color: rgba(0,0,0,0.3); /* Темнее для списка */
+    border-left: 3px solid transparent;
 }
 
 /* Эффект наведения и выбора объекта */
 .object-item:hover {
-    background-color: rgba(50, 100, 150, 0.2);
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px var(--accent-color);
-    text-shadow: var(--text-shadow-accent);
+    background-color: rgba(26, 58, 90, 0.6); /* Темно-синий при наведении */
+    border-left-color: var(--tech-accent-color);
+    color: var(--active-menu-text);
+    text-shadow: var(--text-shadow-main);
 }
 
 .object-item.selected {
-    background-color: rgba(50, 100, 150, 0.4);
-    border-color: var(--main-text-color);
-    box-shadow: 0 0 15px var(--main-text-color), inset 0 0 5px white;
+    background-color: var(--active-menu-bg);
+    color: var(--active-menu-text);
+    border-left-color: var(--tech-accent-color);
     font-weight: bold;
-    text-shadow: 0 0 10px var(--main-text-color), 0 0 20px rgba(255,255,255,0.5);
+    text-shadow: var(--text-shadow-main);
 }
 
 .object-id {
-    color: var(--accent-color);
+    color: inherit;
     font-weight: bold;
     margin-right: 5px;
 }
 
 /* Теги статуса */
 .status-tag {
-    font-size: 0.8em;
-    background-color: rgba(61, 242, 255, 0.1);
-    padding: 2px 6px;
-    border: 1px solid rgba(61, 242, 255, 0.5);
-    margin-left: 10px;
+    font-size: 0.7em;
+    background-color: rgba(61, 242, 255, 0.05);
+    padding: 1px 4px;
+    border: 1px solid rgba(61, 242, 255, 0.3);
+    margin-left: 5px;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
 }
 
 .status-critical {
-    color: var(--error-color);
-    border-color: var(--error-color);
-    background-color: rgba(255, 60, 60, 0.1);
-    animation: blink 1s infinite step-end; /* Мигающий эффект */
+    color: var(--tech-error-color);
+    border-color: var(--tech-error-color);
+    background-color: rgba(255, 60, 60, 0.05);
+    animation: blink 1s infinite alternate;
+    text-shadow: var(--text-shadow-error);
 }
 
 .status-unknown {
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-    background-color: rgba(138, 43, 226, 0.1);
+    color: var(--tech-accent-color);
+    border-color: var(--tech-accent-color);
+    background-color: rgba(138, 43, 226, 0.05);
+    text-shadow: var(--text-shadow-accent);
 }
 
 /* Блок информации об объекте */
 .data-field {
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px dashed rgba(61, 242, 255, 0.2); /* Пунктирная линия */
+    margin-bottom: 8px;
+    padding-bottom: 3px;
+    border-bottom: 1px dashed var(--tech-border-color);
 }
 
 .data-field .label {
-    color: var(--accent-color);
-    min-width: 150px; /* Фиксированная ширина для меток */
+    color: #a0a0a0; /* Приглушенный цвет для меток */
+    min-width: 120px; /* Увеличена ширина метки */
     display: inline-block;
-    text-shadow: var(--text-shadow-accent);
+    text-shadow: none;
+    font-weight: bold;
 }
 
 .description-block {
-    margin-top: 20px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 15px;
-    flex-grow: 1; /* Занимает оставшееся пространство */
-    overflow-y: auto; /* Прокрутка для длинных описаний */
+    margin-top: 15px;
+    border-top: 1px solid var(--tech-border-color);
+    padding-top: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 .description-block .label {
     display: block;
+    margin-bottom: 8px;
+    font-size: 1em;
+    color: #a0a0a0;
+    text-shadow: none;
+    font-weight: bold;
+}
+
+/* Стиль для статичного текста описания */
+.info-text {
+    white-space: pre-wrap; /* Сохраняет переносы строк */
+    font-size: 0.95em;
+    font-family: var(--font-fixed-width);
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
+    opacity: 1;
+    transition: opacity 0.5s ease-in; /* Плавное появление */
+}
+
+.info-text.visible {
+    opacity: 1;
+}
+
+/* --- Стили для раздела КОМПЛЕКСЫ --- */
+.complex-list {
+    display: grid; /* Используем Grid для размещения карточек */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Автоматическое размещение, мин 300px */
+    gap: 15px; /* Отступы между карточками */
+    padding: 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.complex-card, .operation-card {
+    background-color: rgba(26, 58, 90, 0.5); /* Полупрозрачный фон для карточек */
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Скрыть содержимое по умолчанию */
+}
+
+.complex-card:hover, .operation-card:hover {
+    background-color: rgba(26, 58, 90, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.7);
+}
+
+.card-header, .op-header {
+    display: flex;
+    align-items: center;
     margin-bottom: 10px;
-    font-size: 1.1em;
-    color: var(--accent-color);
+    border-bottom: 1px dashed var(--tech-border-color);
+    padding-bottom: 5px;
+}
+
+.card-icon, .op-icon {
+    font-size: 1.5em;
+    margin-right: 10px;
+    color: var(--tech-accent-color);
     text-shadow: var(--text-shadow-accent);
 }
 
-/* Стили прогресс-бара */
+.card-title, .op-title {
+    flex-grow: 1;
+    font-family: var(--font-header);
+    font-size: 1.2em;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
+}
+
+.card-status, .op-status {
+    font-size: 0.8em;
+    background-color: rgba(0,0,0,0.3);
+    padding: 2px 8px;
+    border: 1px solid var(--tech-border-color);
+    color: #a0a0a0;
+    text-shadow: none;
+    white-space: nowrap;
+}
+
+.status-active { color: #00ff00; border-color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+.status-sealed { color: #ffff00; border-color: #ffff00; text-shadow: 0 0 5px #ffff00; }
+.status-decommissioned { color: #ff0000; border-color: #ff0000; text-shadow: 0 0 5px #ff0000; }
+
+/* Для операций */
+.status-completed { color: #00ff00; border-color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+.status-in-progress { color: #ffff00; border-color: #ffff00; text-shadow: 0 0 5px #ffff00; }
+.status-annulled { color: #ff0000; border-color: #ff0000; text-shadow: 0 0 5px #ff0000; }
+
+
+.card-details, .op-details {
+    padding-top: 5px;
+    font-size: 0.9em;
+    color: #a0a0a0; /* Приглушенный цвет для деталей */
+    text-shadow: none;
+    max-height: 0; /* Скрыто по умолчанию */
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, opacity 0.4s ease-out; /* Плавное раскрытие */
+    opacity: 0;
+}
+
+.complex-card.expanded .card-details,
+.operation-card.expanded .op-details {
+    max-height: 500px; /* Достаточно большое значение для раскрытия */
+    opacity: 1;
+    padding-top: 10px;
+    border-top: 1px dashed var(--tech-border-color);
+}
+
+.expanded-info, .op-log {
+    margin-top: 10px;
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid var(--tech-border-color);
+    padding: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
+}
+.expanded-info h4, .op-log h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: var(--tech-accent-color);
+    text-shadow: var(--text-shadow-accent);
+    font-size: 1em;
+}
+.expanded-info p, .op-log p {
+    margin-bottom: 5px;
+    line-height: 1.3;
+    color: inherit;
+    text-shadow: inherit;
+}
+
+/* --- Стили для раздела ОПЕРАЦИИ --- */
+.operations-list {
+    display: flex;
+    flex-direction: column; /* Элементы идут друг за другом */
+    gap: 15px;
+    padding: 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* --- Панель задач (Taskbar) --- */
+.taskbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px; /* Высота панели задач */
+    background-color: var(--taskbar-bg-color);
+    border-top: 1px solid var(--taskbar-border-light);
+    border-bottom: 1px solid var(--taskbar-border-dark); /* Нижняя граница, если панель снизу */
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+    font-family: var(--font-old-gui);
+    z-index: 200; /* Выше окон */
+}
+
+.start-button {
+    background: var(--start-button-bg);
+    border: 1px solid;
+    border-color: #3C7000 #76B900 #76B900 #3C7000; /* Darker/lighter greens for 3D effect */
+    padding: 5px 15px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--start-button-text);
+    cursor: pointer;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.5);
+    margin-right: 10px;
+    transition: all 0.1s ease;
+}
+
+.start-button:hover {
+    background: linear-gradient(to bottom, #86C910, #4C8010);
+}
+
+.start-button:active {
+    border-color: #76B900 #3C7000 #3C7000 #76B900;
+    transform: translateY(1px);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.taskbar-apps {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    align-items: center;
+    padding: 0 5px;
+    border-left: 1px solid var(--taskbar-border-dark);
+    border-right: 1px solid var(--taskbar-border-light);
+    background-color: #e0e0e0; /* Light grey area for apps */
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.taskbar-app-button {
+    background-color: var(--button-bg-light); /* Matching window buttons */
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    height: 28px;
+    padding: 0 10px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-old-gui);
+    font-size: 0.9em;
+    color: var(--tech-main-text-color);
+    text-shadow: var(--text-shadow-main);
+    cursor: pointer;
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -1px -1px 2px rgba(0,0,0,0.5);
+    transition: all 0.1s ease;
+}
+
+.taskbar-app-button:hover {
+    background-color: var(--button-bg-dark);
+}
+.taskbar-app-button.active {
+    background-color: var(--active-menu-bg);
+    color: var(--active-menu-text);
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+
+.system-tray {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background-color: #e0e0e0;
+    border-left: 1px solid var(--taskbar-border-light);
+    border-top: 1px solid var(--taskbar-border-dark);
+    border-bottom: 1px solid var(--taskbar-border-dark);
+    height: 100%;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.clock {
+    font-family: var(--font-fixed-width);
+    font-size: 0.9em;
+    color: #333333; /* Darker color for system tray text */
+    text-shadow: none;
+}
+
+/* Стилизация полос прокрутки (адаптировано под старый стиль) */
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: var(--button-bg-light); /* Светлый фон */
+    border: 1px solid var(--button-border-dark);
+}
+
+::-webkit-scrollbar-button {
+    display: block;
+    height: 15px; /* Кнопки прокрутки */
+    background-color: var(--button-bg-light);
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+    color: var(--tech-main-text-color);
+    font-size: 0.8em;
+    text-align: center;
+    line-height: 15px;
+}
+
+::-webkit-scrollbar-button:hover {
+    background-color: var(--button-bg-dark);
+}
+
+::-webkit-scrollbar-button:active {
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+}
+
+/* Можно добавить стили для стрелок, если нужны */
+::-webkit-scrollbar-button:vertical:start:decrement { content: '▲'; }
+::-webkit-scrollbar-button:vertical:end:increment { content: '▼'; }
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--button-bg-dark); /* Темный ползунок */
+    border: 1px solid;
+    border-color: var(--button-border-light) var(--button-border-dark) var(--button-border-dark) var(--button-border-light);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #6a8ba6; /* Еще темнее при наведении */
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--button-bg-light);
+    border: 1px solid;
+    border-color: var(--button-border-dark) var(--button-border-light) var(--button-border-light) var(--button-border-dark);
+}
+
+/* --- Прогресс-бар для авторизации --- */
 .progress-bar-container {
-    width: 99%;
-    height: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-color);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.7);
-    margin-bottom: 15px;
-    overflow: hidden; /* Скрыть всё, что выходит за границы контейнера */
+    width: 100%;
+    height: 25px;
+    background-color: var(--progress-bar-bg);
+    border: 1px solid var(--progress-bar-border);
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+    display: none; /* Скрыт по умолчанию */
+}
+
+.progress-bar-container.active {
+    display: block;
 }
 
 .progress-bar {
     height: 100%;
-    width: 0%; /* Изначально 0% */
-    background: linear-gradient(90deg, var(--accent-color), var(--main-text-color));
-    box-shadow: 0 0 8px var(--main-text-color);
-    transition: width 1.5s ease-out; /* Анимация заполнения */
+    width: 0%;
+    background: var(--progress-bar-fill);
+    transition: width 0.5s ease-out; /* Плавное заполнение */
+    box-shadow: 0 0 5px rgba(61, 242, 255, 0.7); /* Свечение */
 }
 
-.description-text {
-    opacity: 0; /* Скрыт по умолчанию */
-    transition: opacity 0.5s ease-in 0.8s; /* Появляется после заполнения бара */
-    white-space: pre-wrap; /* Сохраняет переносы строк */
+.progress-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--progress-text-color);
+    font-family: var(--font-fixed-width);
+    font-size: 0.9em;
+    text-shadow: var(--text-shadow-main);
+    white-space: nowrap;
 }
 
-.description-text.loaded {
-    opacity: 1;
+/* --- Консоль (CMD) --- */
+.console-window {
+    top: 100px;
+    left: 100px;
+    width: 800px;
+    height: 600px;
+    min-width: 400px;
+    min-height: 300px;
+    background-color: var(--console-bg);
+    border: 1px solid var(--console-border);
+    box-shadow: 5px 5px 20px rgba(0,255,0,0.5); /* Зеленое свечение */
+    z-index: 101; /* Поверх основного окна */
+    display: none; /* Скрыт по умолчанию */
 }
 
-/* Стилизация полос прокрутки */
-::-webkit-scrollbar {
-    width: 8px;
-    background-color: var(--bg-color);
+.console-window.active {
+    display: flex;
 }
 
-::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 4px;
-    border: 1px solid var(--main-text-color);
+.console-window .os-window-titlebar {
+    background: linear-gradient(to right, #008000, #00b300); /* Зеленый заголовок */
+    color: #FFFFFF;
+    text-shadow: 0 0 5px rgba(255,255,255,0.7);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background-color: var(--main-text-color);
+.console-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    overflow: hidden; /* Скрыть прокрутку здесь, если не нужна */
+}
+
+.console-output {
+    flex-grow: 1;
+    background-color: var(--console-bg);
+    color: var(--console-text);
+    font-family: var(--font-fixed-width);
+    font-size: 0.9em;
+    padding: 5px;
+    overflow-y: auto; /* Прокрутка для вывода */
+    border: 1px solid var(--console-border);
+    margin-bottom: 5px;
+    box-shadow: inset 0 0 5px rgba(0,255,0,0.3);
+    text-shadow: 0 0 3px rgba(0,255,0,0.5);
+    line-height: 1.4;
+}
+
+.console-input-line {
+    display: flex;
+    align-items: center;
+    background-color: var(--console-input-bg);
+    color: var(--console-input-text);
+    font-family: var(--font-fixed-width);
+    font-size: 0.9em;
+    padding: 2px 0;
+}
+
+.console-input {
+    flex-grow: 1;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0 5px;
+    caret-color: var(--console-input-text); /* Цвет курсора */
+}
+
+/* --- Стили для анимированных окон ошибок --- */
+.error-popup {
+    position: fixed;
+    background-color: rgba(255, 0, 0, 0.7); /* Красный полупрозрачный фон */
+    border: 2px solid #FFFF00; /* Желтая рамка */
+    padding: 10px;
+    font-family: 'MS Sans Serif', 'Arial', sans-serif;
+    font-size: 0.9em;
+    color: white;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255,255,0,0.8); /* Желтое свечение */
+    z-index: 9999;
+    animation: errorGlitch 0.5s infinite alternate, pulseBorder 0.2s infinite alternate; /* Анимации */
+    cursor: not-allowed;
+    user-select: none;
+    transform: translate(-50%, -50%); /* Для центрирования по точке генерации */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.error-popup.blue {
+    background-color: rgba(0, 0, 255, 0.7); /* Синий полупрозрачный фон */
+    border-color: #3df2ff; /* Неоновый синий/голубой */
+    box-shadow: 0 0 15px rgba(61, 242, 255, 0.8); /* Неоновое свечение */
+}
+
+/* Анимация случайного движения для ошибок */
+@keyframes errorGlitch {
+    0% { transform: translate(0px, 0px); opacity: 1; }
+    25% { transform: translate(5px, -5px); opacity: 0.9; }
+    50% { transform: translate(-5px, 5px); opacity: 1; }
+    75% { transform: translate(10px, -10px); opacity: 0.8; }
+    100% { transform: translate(0px, 0px); opacity: 1; }
+}
+
+/* Анимация мигающей рамки */
+@keyframes pulseBorder {
+    0% { border-color: #FFFF00; }
+    50% { border-color: #FF0000; }
+    100% { border-color: #FFFF00; }
+}
+
+.error-popup.blue @keyframes pulseBorder {
+    0% { border-color: #3df2ff; }
+    50% { border-color: #0000FF; }
+    100% { border-color: #3df2ff; }
+}
+
+/* --- Синий экран смерти (BSOD) --- */
+.bsod-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0000aa; /* Классический синий цвет BSOD */
+    color: #cccccc; /* Светло-серый текст */
+    font-family: 'Lucida Console', monospace;
+    font-size: 2em; /* Крупный текст */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    white-space: pre; /* Сохраняет пробелы и переносы строк */
+    line-height: 1.5;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 10000; /* Самый верхний слой */
+    display: none; /* Скрыт по умолчанию */
+}
+
+.bsod-screen.active {
+    display: flex;
 }
